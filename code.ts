@@ -143,6 +143,7 @@ async function getBreakpointStyleNode(
   const breakpointStyleNode = figma.createFrame();
   breakpointStyleNode.name = `${breakpoint} ${fontName} Styles`;
   addAutoLayout(breakpointStyleNode, "HORIZONTAL");
+  breakpointStyleNode.resize(350, breakpointStyleNode.height);
 
   const breakpointFontName = figma.createFrame();
   addAutoLayout(breakpointFontName, "HORIZONTAL");
