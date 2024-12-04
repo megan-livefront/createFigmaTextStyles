@@ -109,7 +109,7 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
 function addAutoLayout(frame: FrameNode, direction: "HORIZONTAL" | "VERTICAL") {
   frame.layoutMode = direction; // Set the layout mode to horizontal (can also be 'VERTICAL')
   frame.primaryAxisAlignItems = "MIN"; // Align items to the start of the primary axis
-  frame.counterAxisAlignItems = "MIN"; // Align items to the start of the cross axis
+  frame.counterAxisAlignItems = "CENTER"; // Align items to the start of the cross axis
   frame.layoutSizingHorizontal = "HUG";
   frame.layoutSizingVertical = "HUG";
 }
@@ -140,21 +140,35 @@ async function getBreakpointStyleNode(
   data: FontData,
   fontName: string
 ) {
+  // Frame that holds the font name and the font data
   const breakpointStyleNode = figma.createFrame();
   breakpointStyleNode.name = `${breakpoint} ${fontName} Styles`;
   addAutoLayout(breakpointStyleNode, "HORIZONTAL");
-  breakpointStyleNode.resize(350, breakpointStyleNode.height);
+  breakpointStyleNode.resize(650, breakpointStyleNode.height);
 
+  // font name frame
   const breakpointFontName = figma.createFrame();
   addAutoLayout(breakpointFontName, "HORIZONTAL");
+  breakpointFontName.resize(190, breakpointFontName.height);
   const breakpointFontNameText = figma.createText();
   await figma.loadFontAsync(breakpointFontNameText.fontName as FontName);
   breakpointFontNameText.characters = fontName;
+  breakpointFontNameText.fontSize = parseInt(data.size);
+  breakpointFontNameText.lineHeight = {
+    value: parseInt(data.lineHeight),
+    unit: "PIXELS",
+  };
+  breakpointFontNameText.letterSpacing = {
+    value: parseInt(data.letterSpacing),
+    unit: "PIXELS",
+  };
   breakpointFontName.appendChild(breakpointFontNameText);
   breakpointStyleNode.appendChild(breakpointFontName);
 
+  // font data frame
   const breakpointFontData = figma.createFrame();
   addAutoLayout(breakpointFontData, "HORIZONTAL");
+  breakpointFontData.itemSpacing = 50;
   const breakpointFontSize = figma.createText();
   await figma.loadFontAsync(breakpointFontSize.fontName as FontName);
   breakpointFontSize.characters = data.size;
