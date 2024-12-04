@@ -21,53 +21,17 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     addAutoLayout(parentFrame, "VERTICAL");
     parentFrame.itemSpacing = 30;
 
-    const headingFrame = figma.createFrame();
-    headingFrame.name = "Text Styles Heading";
-    addAutoLayout(headingFrame, "HORIZONTAL");
-    const headingTextNode = figma.createText();
-    await figma.loadFontAsync(headingTextNode.fontName as FontName);
-    headingTextNode.characters = "Text Styles";
-    headingFrame.appendChild(headingTextNode);
-
+    const headingFrame = await getHeadingFrame();
     parentFrame.appendChild(headingFrame);
 
     const stylesNode = figma.createFrame();
     stylesNode.name = "All Styles";
     addAutoLayout(stylesNode, "VERTICAL");
 
-    const textStyleNode = figma.createFrame();
-    textStyleNode.name = "Hero Text Styles";
-    addAutoLayout(textStyleNode, "HORIZONTAL");
-    textStyleNode.itemSpacing = 50;
+    const textStyleNode = await getTextStyleNode();
     stylesNode.appendChild(textStyleNode);
 
-    const desktopStyleNode = figma.createFrame();
-    desktopStyleNode.name = "Desktop Hero Styles";
-    addAutoLayout(desktopStyleNode, "HORIZONTAL");
-
-    const desktopFontName = figma.createFrame();
-    addAutoLayout(desktopFontName, "HORIZONTAL");
-    const desktopFontNameText = figma.createText();
-    await figma.loadFontAsync(desktopFontNameText.fontName as FontName);
-    desktopFontNameText.characters = "Hero";
-    desktopFontName.appendChild(desktopFontNameText);
-    desktopStyleNode.appendChild(desktopFontName);
-
-    const desktopFontData = figma.createFrame();
-    addAutoLayout(desktopFontData, "HORIZONTAL");
-    const desktopFontSize = figma.createText();
-    await figma.loadFontAsync(desktopFontSize.fontName as FontName);
-    desktopFontSize.characters = "51.97px";
-    desktopFontData.appendChild(desktopFontSize);
-    const desktopLineHeight = figma.createText();
-    await figma.loadFontAsync(desktopLineHeight.fontName as FontName);
-    desktopLineHeight.characters = "72px";
-    desktopFontData.appendChild(desktopLineHeight);
-    const desktopLetterSpacing = figma.createText();
-    await figma.loadFontAsync(desktopLetterSpacing.fontName as FontName);
-    desktopLetterSpacing.characters = "-0.8px";
-    desktopFontData.appendChild(desktopLetterSpacing);
-    desktopStyleNode.appendChild(desktopFontData);
+    const desktopStyleNode = await getDesktopStyleNode();
 
     const mobileStyleNode = figma.createFrame();
     mobileStyleNode.name = "Mobile Hero Styles";
@@ -119,9 +83,61 @@ function addAutoLayout(frame: FrameNode, direction: "HORIZONTAL" | "VERTICAL") {
   frame.counterAxisAlignItems = "MIN"; // Align items to the start of the cross axis
   frame.layoutSizingHorizontal = "HUG";
   frame.layoutSizingVertical = "HUG";
-  // frame.itemSpacing = 0; // Set the spacing between items in the layout
   // frame.paddingTop = 10; // Set padding for the frame
   // frame.paddingRight = 10;
   // frame.paddingBottom = 10;
   // frame.paddingLeft = 10;
+}
+
+async function getHeadingFrame() {
+  const headingFrame = figma.createFrame();
+  headingFrame.name = "Text Styles Heading";
+  addAutoLayout(headingFrame, "HORIZONTAL");
+  const headingTextNode = figma.createText();
+  await figma.loadFontAsync(headingTextNode.fontName as FontName);
+  headingTextNode.characters = "Text Styles";
+  headingFrame.appendChild(headingTextNode);
+
+  return headingFrame;
+}
+
+async function getTextStyleNode() {
+  const textStyleNode = figma.createFrame();
+  textStyleNode.name = "Hero Text Styles";
+  addAutoLayout(textStyleNode, "HORIZONTAL");
+  textStyleNode.itemSpacing = 50;
+
+  return textStyleNode;
+}
+
+async function getDesktopStyleNode() {
+  const desktopStyleNode = figma.createFrame();
+  desktopStyleNode.name = "Desktop Hero Styles";
+  addAutoLayout(desktopStyleNode, "HORIZONTAL");
+
+  const desktopFontName = figma.createFrame();
+  addAutoLayout(desktopFontName, "HORIZONTAL");
+  const desktopFontNameText = figma.createText();
+  await figma.loadFontAsync(desktopFontNameText.fontName as FontName);
+  desktopFontNameText.characters = "Hero";
+  desktopFontName.appendChild(desktopFontNameText);
+  desktopStyleNode.appendChild(desktopFontName);
+
+  const desktopFontData = figma.createFrame();
+  addAutoLayout(desktopFontData, "HORIZONTAL");
+  const desktopFontSize = figma.createText();
+  await figma.loadFontAsync(desktopFontSize.fontName as FontName);
+  desktopFontSize.characters = "51.97px";
+  desktopFontData.appendChild(desktopFontSize);
+  const desktopLineHeight = figma.createText();
+  await figma.loadFontAsync(desktopLineHeight.fontName as FontName);
+  desktopLineHeight.characters = "72px";
+  desktopFontData.appendChild(desktopLineHeight);
+  const desktopLetterSpacing = figma.createText();
+  await figma.loadFontAsync(desktopLetterSpacing.fontName as FontName);
+  desktopLetterSpacing.characters = "-0.8px";
+  desktopFontData.appendChild(desktopLetterSpacing);
+  desktopStyleNode.appendChild(desktopFontData);
+
+  return desktopStyleNode;
 }
