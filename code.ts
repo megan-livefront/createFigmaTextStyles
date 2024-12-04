@@ -9,16 +9,16 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
-type AllFontData = {
-  fontName: string;
-  desktopStyles: FontData;
-  mobileStyles: FontData;
-};
-
 type FontData = {
   size: string;
   lineHeight: string;
   letterSpacing: string;
+};
+
+type AllFontData = {
+  fontName: string;
+  desktopStyles: FontData;
+  mobileStyles: FontData;
 };
 
 const defaultFontData: AllFontData[] = [
@@ -48,6 +48,71 @@ const defaultFontData: AllFontData[] = [
       letterSpacing: "-0.8px",
     },
   },
+  {
+    fontName: "Heading 2",
+    desktopStyles: {
+      size: "32px",
+      lineHeight: "40px",
+      letterSpacing: "-0.8px",
+    },
+    mobileStyles: {
+      size: "28px",
+      lineHeight: "36px",
+      letterSpacing: "-0.8px",
+    },
+  },
+  {
+    fontName: "Heading 3",
+    desktopStyles: {
+      size: "28px",
+      lineHeight: "36px",
+      letterSpacing: "-0.7px",
+    },
+    mobileStyles: {
+      size: "25px",
+      lineHeight: "32px",
+      letterSpacing: "-0.7px",
+    },
+  },
+  {
+    fontName: "Heading 4",
+    desktopStyles: {
+      size: "25px",
+      lineHeight: "32px",
+      letterSpacing: "-0.5px",
+    },
+    mobileStyles: {
+      size: "22px",
+      lineHeight: "28px",
+      letterSpacing: "-0.5px",
+    },
+  },
+  {
+    fontName: "Heading 5",
+    desktopStyles: {
+      size: "22px",
+      lineHeight: "28px",
+      letterSpacing: "-0.5px",
+    },
+    mobileStyles: {
+      size: "20px",
+      lineHeight: "24px",
+      letterSpacing: "-0.5px",
+    },
+  },
+  {
+    fontName: "Heading 6",
+    desktopStyles: {
+      size: "20px",
+      lineHeight: "24px",
+      letterSpacing: "-0.5px",
+    },
+    mobileStyles: {
+      size: "18px",
+      lineHeight: "24px",
+      letterSpacing: "-0.5px",
+    },
+  },
 ];
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
@@ -68,6 +133,7 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     const stylesNode = figma.createFrame();
     stylesNode.name = "All Styles";
     addAutoLayout(stylesNode, "VERTICAL");
+    stylesNode.itemSpacing = 25;
 
     const createTextStyle = async (fontItem: AllFontData) => {
       const { fontName, desktopStyles, mobileStyles } = fontItem;
@@ -151,7 +217,6 @@ async function getBreakpointStyleNode(
   addAutoLayout(breakpointFontName, "HORIZONTAL");
   breakpointFontName.resize(190, breakpointFontName.height);
   const breakpointFontNameText = figma.createText();
-  await figma.loadFontAsync(breakpointFontNameText.fontName as FontName);
   breakpointFontNameText.characters = fontName;
   breakpointFontNameText.fontSize = parseInt(data.size);
   breakpointFontNameText.lineHeight = {
@@ -170,15 +235,12 @@ async function getBreakpointStyleNode(
   addAutoLayout(breakpointFontData, "HORIZONTAL");
   breakpointFontData.itemSpacing = 50;
   const breakpointFontSize = figma.createText();
-  await figma.loadFontAsync(breakpointFontSize.fontName as FontName);
   breakpointFontSize.characters = data.size;
   breakpointFontData.appendChild(breakpointFontSize);
   const breakpointLineHeight = figma.createText();
-  await figma.loadFontAsync(breakpointLineHeight.fontName as FontName);
   breakpointLineHeight.characters = data.lineHeight;
   breakpointFontData.appendChild(breakpointLineHeight);
   const breakpointLetterSpacing = figma.createText();
-  await figma.loadFontAsync(breakpointLetterSpacing.fontName as FontName);
   breakpointLetterSpacing.characters = data.letterSpacing;
   breakpointFontData.appendChild(breakpointLetterSpacing);
   breakpointStyleNode.appendChild(breakpointFontData);
