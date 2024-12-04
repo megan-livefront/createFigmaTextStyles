@@ -18,8 +18,8 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
   if (msg.type === "create-shapes") {
     const parentFrame = figma.createFrame();
     parentFrame.name = "Text Styles Frame";
-    // parentFrame.resize(1000, 1000);
     addAutoLayout(parentFrame, "VERTICAL");
+    parentFrame.itemSpacing = 30;
 
     const headingFrame = figma.createFrame();
     headingFrame.name = "Text Styles Heading";
@@ -38,6 +38,7 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     const textStyleNode = figma.createFrame();
     textStyleNode.name = "Hero Text Styles";
     addAutoLayout(textStyleNode, "HORIZONTAL");
+    textStyleNode.itemSpacing = 50;
     stylesNode.appendChild(textStyleNode);
 
     const desktopStyleNode = figma.createFrame();
@@ -68,7 +69,36 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     desktopFontData.appendChild(desktopLetterSpacing);
     desktopStyleNode.appendChild(desktopFontData);
 
+    const mobileStyleNode = figma.createFrame();
+    mobileStyleNode.name = "Mobile Hero Styles";
+    addAutoLayout(mobileStyleNode, "HORIZONTAL");
+
+    const mobileFontName = figma.createFrame();
+    addAutoLayout(mobileFontName, "HORIZONTAL");
+    const mobileFontNameText = figma.createText();
+    await figma.loadFontAsync(mobileFontNameText.fontName as FontName);
+    mobileFontNameText.characters = "Hero";
+    mobileFontName.appendChild(mobileFontNameText);
+    mobileStyleNode.appendChild(mobileFontName);
+
+    const mobileFontData = figma.createFrame();
+    addAutoLayout(mobileFontData, "HORIZONTAL");
+    const mobileFontSize = figma.createText();
+    await figma.loadFontAsync(mobileFontSize.fontName as FontName);
+    mobileFontSize.characters = "36px";
+    mobileFontData.appendChild(mobileFontSize);
+    const mobileLineHeight = figma.createText();
+    await figma.loadFontAsync(mobileLineHeight.fontName as FontName);
+    mobileLineHeight.characters = "48px";
+    mobileFontData.appendChild(mobileLineHeight);
+    const mobileLetterSpacing = figma.createText();
+    await figma.loadFontAsync(mobileLetterSpacing.fontName as FontName);
+    mobileLetterSpacing.characters = "-0.8px";
+    mobileFontData.appendChild(mobileLetterSpacing);
+    mobileStyleNode.appendChild(mobileFontData);
+
     textStyleNode.appendChild(desktopStyleNode);
+    textStyleNode.appendChild(mobileStyleNode);
     stylesNode.appendChild(textStyleNode);
     parentFrame.appendChild(stylesNode);
 
