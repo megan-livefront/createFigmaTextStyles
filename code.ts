@@ -21,7 +21,7 @@ type FontData = {
   letterSpacing: string;
 };
 
-const defaultTextStyles: AllFontData[] = [
+const defaultFontData: AllFontData[] = [
   {
     fontName: "Hero",
     desktopStyles: {
@@ -89,7 +89,7 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
       stylesNode.appendChild(textStyleNode);
     };
 
-    for (const fontItem of defaultTextStyles) {
+    for (const fontItem of defaultFontData) {
       await createTextStyle(fontItem); // Waits for each item to finish before moving to the next one
     }
 
