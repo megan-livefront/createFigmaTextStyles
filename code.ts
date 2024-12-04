@@ -31,35 +31,8 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     const textStyleNode = await getTextStyleNode();
     stylesNode.appendChild(textStyleNode);
 
-    const desktopStyleNode = await getDesktopStyleNode();
-
-    const mobileStyleNode = figma.createFrame();
-    mobileStyleNode.name = "Mobile Hero Styles";
-    addAutoLayout(mobileStyleNode, "HORIZONTAL");
-
-    const mobileFontName = figma.createFrame();
-    addAutoLayout(mobileFontName, "HORIZONTAL");
-    const mobileFontNameText = figma.createText();
-    await figma.loadFontAsync(mobileFontNameText.fontName as FontName);
-    mobileFontNameText.characters = "Hero";
-    mobileFontName.appendChild(mobileFontNameText);
-    mobileStyleNode.appendChild(mobileFontName);
-
-    const mobileFontData = figma.createFrame();
-    addAutoLayout(mobileFontData, "HORIZONTAL");
-    const mobileFontSize = figma.createText();
-    await figma.loadFontAsync(mobileFontSize.fontName as FontName);
-    mobileFontSize.characters = "36px";
-    mobileFontData.appendChild(mobileFontSize);
-    const mobileLineHeight = figma.createText();
-    await figma.loadFontAsync(mobileLineHeight.fontName as FontName);
-    mobileLineHeight.characters = "48px";
-    mobileFontData.appendChild(mobileLineHeight);
-    const mobileLetterSpacing = figma.createText();
-    await figma.loadFontAsync(mobileLetterSpacing.fontName as FontName);
-    mobileLetterSpacing.characters = "-0.8px";
-    mobileFontData.appendChild(mobileLetterSpacing);
-    mobileStyleNode.appendChild(mobileFontData);
+    const desktopStyleNode = await getBreakpointStyleNode("Desktop");
+    const mobileStyleNode = await getBreakpointStyleNode("Mobile");
 
     textStyleNode.appendChild(desktopStyleNode);
     textStyleNode.appendChild(mobileStyleNode);
@@ -110,34 +83,34 @@ async function getTextStyleNode() {
   return textStyleNode;
 }
 
-async function getDesktopStyleNode() {
-  const desktopStyleNode = figma.createFrame();
-  desktopStyleNode.name = "Desktop Hero Styles";
-  addAutoLayout(desktopStyleNode, "HORIZONTAL");
+async function getBreakpointStyleNode(breakpoint: "Desktop" | "Mobile") {
+  const breakpointStyleNode = figma.createFrame();
+  breakpointStyleNode.name = `${breakpoint} Hero Styles`;
+  addAutoLayout(breakpointStyleNode, "HORIZONTAL");
 
-  const desktopFontName = figma.createFrame();
-  addAutoLayout(desktopFontName, "HORIZONTAL");
-  const desktopFontNameText = figma.createText();
-  await figma.loadFontAsync(desktopFontNameText.fontName as FontName);
-  desktopFontNameText.characters = "Hero";
-  desktopFontName.appendChild(desktopFontNameText);
-  desktopStyleNode.appendChild(desktopFontName);
+  const breakpointFontName = figma.createFrame();
+  addAutoLayout(breakpointFontName, "HORIZONTAL");
+  const breakpointFontNameText = figma.createText();
+  await figma.loadFontAsync(breakpointFontNameText.fontName as FontName);
+  breakpointFontNameText.characters = "Hero";
+  breakpointFontName.appendChild(breakpointFontNameText);
+  breakpointStyleNode.appendChild(breakpointFontName);
 
-  const desktopFontData = figma.createFrame();
-  addAutoLayout(desktopFontData, "HORIZONTAL");
-  const desktopFontSize = figma.createText();
-  await figma.loadFontAsync(desktopFontSize.fontName as FontName);
-  desktopFontSize.characters = "51.97px";
-  desktopFontData.appendChild(desktopFontSize);
-  const desktopLineHeight = figma.createText();
-  await figma.loadFontAsync(desktopLineHeight.fontName as FontName);
-  desktopLineHeight.characters = "72px";
-  desktopFontData.appendChild(desktopLineHeight);
-  const desktopLetterSpacing = figma.createText();
-  await figma.loadFontAsync(desktopLetterSpacing.fontName as FontName);
-  desktopLetterSpacing.characters = "-0.8px";
-  desktopFontData.appendChild(desktopLetterSpacing);
-  desktopStyleNode.appendChild(desktopFontData);
+  const breakpointFontData = figma.createFrame();
+  addAutoLayout(breakpointFontData, "HORIZONTAL");
+  const breakpointFontSize = figma.createText();
+  await figma.loadFontAsync(breakpointFontSize.fontName as FontName);
+  breakpointFontSize.characters = "51.97px";
+  breakpointFontData.appendChild(breakpointFontSize);
+  const breakpointLineHeight = figma.createText();
+  await figma.loadFontAsync(breakpointLineHeight.fontName as FontName);
+  breakpointLineHeight.characters = "72px";
+  breakpointFontData.appendChild(breakpointLineHeight);
+  const breakpointLetterSpacing = figma.createText();
+  await figma.loadFontAsync(breakpointLetterSpacing.fontName as FontName);
+  breakpointLetterSpacing.characters = "-0.8px";
+  breakpointFontData.appendChild(breakpointLetterSpacing);
+  breakpointStyleNode.appendChild(breakpointFontData);
 
-  return desktopStyleNode;
+  return breakpointStyleNode;
 }
