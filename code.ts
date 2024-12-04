@@ -135,28 +135,8 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     addAutoLayout(stylesNode, "VERTICAL");
     stylesNode.itemSpacing = 25;
 
-    const createTextStyle = async (fontItem: AllFontData) => {
-      const { fontName, desktopStyles, mobileStyles } = fontItem;
-      const textStyleNode = await getTextStyleNode(fontName);
-
-      const desktopStyleNode = await getBreakpointStyleNode(
-        "Desktop",
-        desktopStyles,
-        fontName
-      );
-      const mobileStyleNode = await getBreakpointStyleNode(
-        "Mobile",
-        mobileStyles,
-        fontName
-      );
-
-      textStyleNode.appendChild(desktopStyleNode);
-      textStyleNode.appendChild(mobileStyleNode);
-      stylesNode.appendChild(textStyleNode);
-    };
-
     for (const fontItem of defaultFontData) {
-      await createTextStyle(fontItem); // Waits for each item to finish before moving to the next one
+      await createTextStyle(fontItem, stylesNode); // Waits for each item to finish before moving to the next one
     }
 
     parentFrame.appendChild(stylesNode);
@@ -199,6 +179,26 @@ async function getTextStyleNode(fontName: string) {
   textStyleNode.itemSpacing = 50;
 
   return textStyleNode;
+}
+
+async function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
+  const { fontName, desktopStyles, mobileStyles } = fontItem;
+  const textStyleNode = await getTextStyleNode(fontName);
+
+  const desktopStyleNode = await getBreakpointStyleNode(
+    "Desktop",
+    desktopStyles,
+    fontName
+  );
+  const mobileStyleNode = await getBreakpointStyleNode(
+    "Mobile",
+    mobileStyles,
+    fontName
+  );
+
+  textStyleNode.appendChild(desktopStyleNode);
+  textStyleNode.appendChild(mobileStyleNode);
+  stylesNode.appendChild(textStyleNode);
 }
 
 async function getBreakpointStyleNode(
