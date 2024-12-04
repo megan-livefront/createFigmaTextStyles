@@ -9,6 +9,47 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
+type AllFontData = {
+  fontName: string;
+  desktopStyles: FontData;
+  mobileStyles: FontData;
+};
+
+type FontData = {
+  size: string;
+  lineHeight: string;
+  letterSpacing: string;
+};
+
+const defaultTextStyles: AllFontData[] = [
+  {
+    fontName: "Hero",
+    desktopStyles: {
+      size: "51px",
+      lineHeight: "72px",
+      letterSpacing: "-0.8px",
+    },
+    mobileStyles: {
+      size: "36px",
+      lineHeight: "48px",
+      letterSpacing: "-0.8px",
+    },
+  },
+  {
+    fontName: "Heading 1",
+    desktopStyles: {
+      size: "36px",
+      lineHeight: "48px",
+      letterSpacing: "-0.8px",
+    },
+    mobileStyles: {
+      size: "32px",
+      lineHeight: "40px",
+      letterSpacing: "-0.8px",
+    },
+  },
+];
+
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
@@ -28,15 +69,30 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     stylesNode.name = "All Styles";
     addAutoLayout(stylesNode, "VERTICAL");
 
-    const textStyleNode = await getTextStyleNode();
-    stylesNode.appendChild(textStyleNode);
+    const createTextStyle = async (fontItem: AllFontData) => {
+      const { fontName, desktopStyles, mobileStyles } = fontItem;
+      const textStyleNode = await getTextStyleNode(fontName);
 
-    const desktopStyleNode = await getBreakpointStyleNode("Desktop");
-    const mobileStyleNode = await getBreakpointStyleNode("Mobile");
+      const desktopStyleNode = await getBreakpointStyleNode(
+        "Desktop",
+        desktopStyles,
+        fontName
+      );
+      const mobileStyleNode = await getBreakpointStyleNode(
+        "Mobile",
+        mobileStyles,
+        fontName
+      );
 
-    textStyleNode.appendChild(desktopStyleNode);
-    textStyleNode.appendChild(mobileStyleNode);
-    stylesNode.appendChild(textStyleNode);
+      textStyleNode.appendChild(desktopStyleNode);
+      textStyleNode.appendChild(mobileStyleNode);
+      stylesNode.appendChild(textStyleNode);
+    };
+
+    for (const fontItem of defaultTextStyles) {
+      await createTextStyle(fontItem); // Waits for each item to finish before moving to the next one
+    }
+
     parentFrame.appendChild(stylesNode);
 
     parentFrame.x = figma.currentPage.selection[0].x;
@@ -56,10 +112,6 @@ function addAutoLayout(frame: FrameNode, direction: "HORIZONTAL" | "VERTICAL") {
   frame.counterAxisAlignItems = "MIN"; // Align items to the start of the cross axis
   frame.layoutSizingHorizontal = "HUG";
   frame.layoutSizingVertical = "HUG";
-  // frame.paddingTop = 10; // Set padding for the frame
-  // frame.paddingRight = 10;
-  // frame.paddingBottom = 10;
-  // frame.paddingLeft = 10;
 }
 
 async function getHeadingFrame() {
@@ -74,25 +126,29 @@ async function getHeadingFrame() {
   return headingFrame;
 }
 
-async function getTextStyleNode() {
+async function getTextStyleNode(fontName: string) {
   const textStyleNode = figma.createFrame();
-  textStyleNode.name = "Hero Text Styles";
+  textStyleNode.name = `${fontName} Text Styles`;
   addAutoLayout(textStyleNode, "HORIZONTAL");
   textStyleNode.itemSpacing = 50;
 
   return textStyleNode;
 }
 
-async function getBreakpointStyleNode(breakpoint: "Desktop" | "Mobile") {
+async function getBreakpointStyleNode(
+  breakpoint: "Desktop" | "Mobile",
+  data: FontData,
+  fontName: string
+) {
   const breakpointStyleNode = figma.createFrame();
-  breakpointStyleNode.name = `${breakpoint} Hero Styles`;
+  breakpointStyleNode.name = `${breakpoint} ${fontName} Styles`;
   addAutoLayout(breakpointStyleNode, "HORIZONTAL");
 
   const breakpointFontName = figma.createFrame();
   addAutoLayout(breakpointFontName, "HORIZONTAL");
   const breakpointFontNameText = figma.createText();
   await figma.loadFontAsync(breakpointFontNameText.fontName as FontName);
-  breakpointFontNameText.characters = "Hero";
+  breakpointFontNameText.characters = fontName;
   breakpointFontName.appendChild(breakpointFontNameText);
   breakpointStyleNode.appendChild(breakpointFontName);
 
@@ -100,15 +156,15 @@ async function getBreakpointStyleNode(breakpoint: "Desktop" | "Mobile") {
   addAutoLayout(breakpointFontData, "HORIZONTAL");
   const breakpointFontSize = figma.createText();
   await figma.loadFontAsync(breakpointFontSize.fontName as FontName);
-  breakpointFontSize.characters = "51.97px";
+  breakpointFontSize.characters = data.size;
   breakpointFontData.appendChild(breakpointFontSize);
   const breakpointLineHeight = figma.createText();
   await figma.loadFontAsync(breakpointLineHeight.fontName as FontName);
-  breakpointLineHeight.characters = "72px";
+  breakpointLineHeight.characters = data.lineHeight;
   breakpointFontData.appendChild(breakpointLineHeight);
   const breakpointLetterSpacing = figma.createText();
   await figma.loadFontAsync(breakpointLetterSpacing.fontName as FontName);
-  breakpointLetterSpacing.characters = "-0.8px";
+  breakpointLetterSpacing.characters = data.letterSpacing;
   breakpointFontData.appendChild(breakpointLetterSpacing);
   breakpointStyleNode.appendChild(breakpointFontData);
 
