@@ -225,21 +225,14 @@ function updateBreakpointMainHeader(
   mainHeader.fontSize = 20;
 }
 
-async function updateColumnHeaders(
-  fontSize: TextNode,
-  lineHeight: TextNode,
-  letterSpacing: TextNode
-) {
+async function updateColumnHeaders(columnHeaders: TextNode[]) {
   await figma.loadFontAsync({ family: "Inter", style: "Bold" });
   const columnFont: FontName = { family: "Inter", style: "Bold" };
-
-  fontSize.fontName = columnFont;
-  lineHeight.fontName = columnFont;
-  letterSpacing.fontName = columnFont;
-
-  fontSize.fontSize = 12;
-  lineHeight.fontSize = 12;
-  letterSpacing.fontSize = 12;
+  columnHeaders.forEach((header) => {
+    header.fontName = columnFont;
+    header.characters = header.characters.toUpperCase();
+    header.fontSize = 8;
+  });
 }
 
 async function getBreakpointStyleNode(
@@ -295,11 +288,11 @@ async function getBreakpointStyleNode(
   breakpointLetterSpacing.resize(90, breakpointLetterSpacing.height);
 
   if (isHeaderNode)
-    await updateColumnHeaders(
+    await updateColumnHeaders([
       breakpointFontSize,
       breakpointLineHeight,
-      breakpointLetterSpacing
-    );
+      breakpointLetterSpacing,
+    ]);
   breakpointFontData.appendChild(breakpointFontSize);
   breakpointFontData.appendChild(breakpointLineHeight);
   breakpointFontData.appendChild(breakpointLetterSpacing);
