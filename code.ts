@@ -284,14 +284,17 @@ async function getBreakpointStyleNode(
   // font size
   const breakpointFontSize = figma.createText();
   breakpointFontSize.characters = data.size;
+  breakpointFontSize.fontSize = 20;
   breakpointFontSize.resize(90, breakpointFontSize.height);
   // line height
   const breakpointLineHeight = figma.createText();
   breakpointLineHeight.characters = data.lineHeight;
+  breakpointLineHeight.fontSize = 20;
   breakpointLineHeight.resize(90, breakpointLineHeight.height);
   // letter spacing
   const breakpointLetterSpacing = figma.createText();
   breakpointLetterSpacing.characters = data.letterSpacing;
+  breakpointLetterSpacing.fontSize = 20;
   breakpointLetterSpacing.resize(90, breakpointLetterSpacing.height);
 
   if (isHeaderNode)
