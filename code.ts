@@ -149,10 +149,10 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     addAutoLayout(stylesNode, "VERTICAL");
     stylesNode.itemSpacing = 25;
 
-    createTextStyle(columnHeaders, stylesNode);
+    await createTextStyle(columnHeaders, stylesNode);
 
     for (const fontItem of defaultFontData) {
-      createTextStyle(fontItem, stylesNode); // Waits for each item to finish before moving to the next one
+      await createTextStyle(fontItem, stylesNode); // Waits for each item to finish before moving to the next one
     }
 
     parentFrame.appendChild(stylesNode);
@@ -197,16 +197,16 @@ function getTextStyleNode(fontName: string) {
   return textStyleNode;
 }
 
-function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
+async function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
   const { fontName, desktopStyles, mobileStyles } = fontItem;
   const textStyleNode = getTextStyleNode(fontName);
 
-  const desktopStyleNode = getBreakpointStyleNode(
+  const desktopStyleNode = await getBreakpointStyleNode(
     "Desktop",
     desktopStyles,
     fontName
   );
-  const mobileStyleNode = getBreakpointStyleNode(
+  const mobileStyleNode = await getBreakpointStyleNode(
     "Mobile",
     mobileStyles,
     fontName
@@ -217,7 +217,32 @@ function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
   stylesNode.appendChild(textStyleNode);
 }
 
-function getBreakpointStyleNode(
+function updateBreakpointMainHeader(
+  mainHeader: TextNode,
+  breakpoint: "Desktop" | "Mobile"
+) {
+  mainHeader.characters = breakpoint;
+  mainHeader.fontSize = 20;
+}
+
+async function updateColumnHeaders(
+  fontSize: TextNode,
+  lineHeight: TextNode,
+  letterSpacing: TextNode
+) {
+  await figma.loadFontAsync({ family: "Inter", style: "Bold" });
+  const columnFont: FontName = { family: "Inter", style: "Bold" };
+
+  fontSize.fontName = columnFont;
+  lineHeight.fontName = columnFont;
+  letterSpacing.fontName = columnFont;
+
+  fontSize.fontSize = 12;
+  lineHeight.fontSize = 12;
+  letterSpacing.fontSize = 12;
+}
+
+async function getBreakpointStyleNode(
   breakpoint: "Desktop" | "Mobile",
   data: FontData,
   fontName: string
@@ -235,8 +260,12 @@ function getBreakpointStyleNode(
   addAutoLayout(breakpointFontName, "HORIZONTAL");
   breakpointFontName.resize(190, breakpointFontName.height);
   const breakpointFontNameText = figma.createText();
-  breakpointFontNameText.characters = isHeaderNode ? breakpoint : fontName;
-  breakpointFontNameText.fontSize = isHeaderNode ? 20 : parseInt(data.size);
+  if (isHeaderNode)
+    updateBreakpointMainHeader(breakpointFontNameText, breakpoint);
+  else {
+    breakpointFontNameText.characters = fontName;
+    breakpointFontNameText.fontSize = parseInt(data.size);
+  }
   breakpointFontNameText.lineHeight = {
     value: isHeaderNode ? 28 : parseInt(data.lineHeight),
     unit: "PIXELS",
@@ -256,16 +285,23 @@ function getBreakpointStyleNode(
   const breakpointFontSize = figma.createText();
   breakpointFontSize.characters = data.size;
   breakpointFontSize.resize(90, breakpointFontSize.height);
-  breakpointFontData.appendChild(breakpointFontSize);
   // line height
   const breakpointLineHeight = figma.createText();
   breakpointLineHeight.characters = data.lineHeight;
   breakpointLineHeight.resize(90, breakpointLineHeight.height);
-  breakpointFontData.appendChild(breakpointLineHeight);
   // letter spacing
   const breakpointLetterSpacing = figma.createText();
   breakpointLetterSpacing.characters = data.letterSpacing;
   breakpointLetterSpacing.resize(90, breakpointLetterSpacing.height);
+
+  if (isHeaderNode)
+    await updateColumnHeaders(
+      breakpointFontSize,
+      breakpointLineHeight,
+      breakpointLetterSpacing
+    );
+  breakpointFontData.appendChild(breakpointFontSize);
+  breakpointFontData.appendChild(breakpointLineHeight);
   breakpointFontData.appendChild(breakpointLetterSpacing);
 
   breakpointStyleNode.appendChild(breakpointFontData);
