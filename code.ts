@@ -21,6 +21,20 @@ type AllFontData = {
   mobileStyles: FontData;
 };
 
+const columnHeaders: AllFontData = {
+  fontName: "Headers",
+  desktopStyles: {
+    size: "Size",
+    lineHeight: "Line Height",
+    letterSpacing: "Letter Spacing",
+  },
+  mobileStyles: {
+    size: "Size",
+    lineHeight: "Line Height",
+    letterSpacing: "Letter Spacing",
+  },
+};
+
 const defaultFontData: AllFontData[] = [
   {
     fontName: "Hero",
@@ -135,8 +149,10 @@ figma.ui.onmessage = async (msg: { type: string; count: number }) => {
     addAutoLayout(stylesNode, "VERTICAL");
     stylesNode.itemSpacing = 25;
 
+    createTextStyle(columnHeaders, stylesNode);
+
     for (const fontItem of defaultFontData) {
-      await createTextStyle(fontItem, stylesNode); // Waits for each item to finish before moving to the next one
+      createTextStyle(fontItem, stylesNode); // Waits for each item to finish before moving to the next one
     }
 
     parentFrame.appendChild(stylesNode);
@@ -172,7 +188,7 @@ async function getHeadingFrame() {
   return headingFrame;
 }
 
-async function getTextStyleNode(fontName: string) {
+function getTextStyleNode(fontName: string) {
   const textStyleNode = figma.createFrame();
   textStyleNode.name = `${fontName} Text Styles`;
   addAutoLayout(textStyleNode, "HORIZONTAL");
@@ -181,16 +197,16 @@ async function getTextStyleNode(fontName: string) {
   return textStyleNode;
 }
 
-async function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
+function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
   const { fontName, desktopStyles, mobileStyles } = fontItem;
-  const textStyleNode = await getTextStyleNode(fontName);
+  const textStyleNode = getTextStyleNode(fontName);
 
-  const desktopStyleNode = await getBreakpointStyleNode(
+  const desktopStyleNode = getBreakpointStyleNode(
     "Desktop",
     desktopStyles,
     fontName
   );
-  const mobileStyleNode = await getBreakpointStyleNode(
+  const mobileStyleNode = getBreakpointStyleNode(
     "Mobile",
     mobileStyles,
     fontName
@@ -201,11 +217,13 @@ async function createTextStyle(fontItem: AllFontData, stylesNode: FrameNode) {
   stylesNode.appendChild(textStyleNode);
 }
 
-async function getBreakpointStyleNode(
+function getBreakpointStyleNode(
   breakpoint: "Desktop" | "Mobile",
   data: FontData,
   fontName: string
 ) {
+  const isHeaderNode = fontName === "Headers";
+
   // Frame that holds the font name and the font data
   const breakpointStyleNode = figma.createFrame();
   breakpointStyleNode.name = `${breakpoint} ${fontName} Styles`;
@@ -217,14 +235,14 @@ async function getBreakpointStyleNode(
   addAutoLayout(breakpointFontName, "HORIZONTAL");
   breakpointFontName.resize(190, breakpointFontName.height);
   const breakpointFontNameText = figma.createText();
-  breakpointFontNameText.characters = fontName;
-  breakpointFontNameText.fontSize = parseInt(data.size);
+  breakpointFontNameText.characters = isHeaderNode ? breakpoint : fontName;
+  breakpointFontNameText.fontSize = isHeaderNode ? 20 : parseInt(data.size);
   breakpointFontNameText.lineHeight = {
-    value: parseInt(data.lineHeight),
+    value: isHeaderNode ? 28 : parseInt(data.lineHeight),
     unit: "PIXELS",
   };
   breakpointFontNameText.letterSpacing = {
-    value: parseInt(data.letterSpacing),
+    value: isHeaderNode ? -0.8 : parseInt(data.letterSpacing),
     unit: "PIXELS",
   };
   breakpointFontName.appendChild(breakpointFontNameText);
@@ -233,16 +251,23 @@ async function getBreakpointStyleNode(
   // font data frame
   const breakpointFontData = figma.createFrame();
   addAutoLayout(breakpointFontData, "HORIZONTAL");
-  breakpointFontData.itemSpacing = 50;
+  breakpointFontData.itemSpacing = 10;
+  // font size
   const breakpointFontSize = figma.createText();
   breakpointFontSize.characters = data.size;
+  breakpointFontSize.resize(90, breakpointFontSize.height);
   breakpointFontData.appendChild(breakpointFontSize);
+  // line height
   const breakpointLineHeight = figma.createText();
   breakpointLineHeight.characters = data.lineHeight;
+  breakpointLineHeight.resize(90, breakpointLineHeight.height);
   breakpointFontData.appendChild(breakpointLineHeight);
+  // letter spacing
   const breakpointLetterSpacing = figma.createText();
   breakpointLetterSpacing.characters = data.letterSpacing;
+  breakpointLetterSpacing.resize(90, breakpointLetterSpacing.height);
   breakpointFontData.appendChild(breakpointLetterSpacing);
+
   breakpointStyleNode.appendChild(breakpointFontData);
 
   return breakpointStyleNode;
