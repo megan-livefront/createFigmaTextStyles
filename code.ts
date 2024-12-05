@@ -233,13 +233,11 @@ async function updateBreakpointMainHeader(
   mainHeader.fontName = columnFont;
 }
 
-async function updateColumnHeaders(columnHeaders: TextNode[]) {
+function updateColumnHeader(columnHeader: TextNode) {
   const columnFont: FontName = { family: "Inter", style: "Bold" };
-  columnHeaders.forEach((header) => {
-    header.fontName = columnFont;
-    header.characters = header.characters.toUpperCase();
-    header.fontSize = 8;
-  });
+  columnHeader.fontName = columnFont;
+  columnHeader.characters = columnHeader.characters.toUpperCase();
+  columnHeader.fontSize = 8;
 }
 
 async function getBreakpointStyleNode(
@@ -281,31 +279,20 @@ async function getBreakpointStyleNode(
   const breakpointFontData = figma.createFrame();
   addAutoLayout(breakpointFontData, "HORIZONTAL");
   breakpointFontData.itemSpacing = 10;
-  // font size
-  const breakpointFontSize = figma.createText();
-  breakpointFontSize.characters = data.size;
-  breakpointFontSize.fontSize = 20;
-  breakpointFontSize.resize(90, breakpointFontSize.height);
-  // line height
-  const breakpointLineHeight = figma.createText();
-  breakpointLineHeight.characters = data.lineHeight;
-  breakpointLineHeight.fontSize = 20;
-  breakpointLineHeight.resize(90, breakpointLineHeight.height);
-  // letter spacing
-  const breakpointLetterSpacing = figma.createText();
-  breakpointLetterSpacing.characters = data.letterSpacing;
-  breakpointLetterSpacing.fontSize = 20;
-  breakpointLetterSpacing.resize(90, breakpointLetterSpacing.height);
 
-  if (isHeaderNode)
-    await updateColumnHeaders([
-      breakpointFontSize,
-      breakpointLineHeight,
-      breakpointLetterSpacing,
-    ]);
-  breakpointFontData.appendChild(breakpointFontSize);
-  breakpointFontData.appendChild(breakpointLineHeight);
-  breakpointFontData.appendChild(breakpointLetterSpacing);
+  const dataColumns: (keyof FontData)[] = [
+    "size",
+    "lineHeight",
+    "letterSpacing",
+  ];
+  dataColumns.forEach((dataColumn) => {
+    const fontDataItem = figma.createText();
+    fontDataItem.characters = data[dataColumn];
+    fontDataItem.fontSize = 20;
+    fontDataItem.resize(90, fontDataItem.height);
+    if (isHeaderNode) updateColumnHeader(fontDataItem);
+    breakpointFontData.appendChild(fontDataItem);
+  });
 
   breakpointStyleNode.appendChild(breakpointFontData);
 
