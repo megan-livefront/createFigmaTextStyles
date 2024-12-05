@@ -156,8 +156,8 @@ if (figma.editorType === "figma") {
 
     parentFrame.appendChild(stylesNode);
 
-    parentFrame.x = figma.currentPage.selection[0].x;
-    parentFrame.y = figma.currentPage.selection[0].y;
+    parentFrame.x = figma.viewport.center.x - parentFrame.width / 2;
+    parentFrame.y = figma.viewport.center.y - parentFrame.height / 2;
 
     figma.currentPage.appendChild(parentFrame);
 
