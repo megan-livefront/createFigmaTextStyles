@@ -133,6 +133,10 @@ if (figma.editorType === "figma") {
   const main = async () => {
     const parentFrame = figma.createFrame();
     parentFrame.name = "Text Styles Frame";
+    parentFrame.paddingBottom = 90;
+    parentFrame.paddingTop = 50;
+    parentFrame.paddingLeft = 90;
+    parentFrame.paddingRight = 90;
     addAutoLayout(parentFrame, "VERTICAL");
     parentFrame.itemSpacing = 30;
 
@@ -163,10 +167,6 @@ if (figma.editorType === "figma") {
   main();
 }
 
-// Make sure to close the plugin when you're done. Otherwise the plugin will
-// keep running, which shows the cancel button at the bottom of the screen.
-// figma.closePlugin();
-
 function addAutoLayout(frame: FrameNode, direction: "HORIZONTAL" | "VERTICAL") {
   frame.layoutMode = direction; // Set the layout mode to horizontal (can also be 'VERTICAL')
   frame.primaryAxisAlignItems = "MIN"; // Align items to the start of the primary axis
@@ -178,10 +178,17 @@ function addAutoLayout(frame: FrameNode, direction: "HORIZONTAL" | "VERTICAL") {
 async function getHeadingFrame() {
   const headingFrame = figma.createFrame();
   headingFrame.name = "Text Styles Heading";
+  headingFrame.paddingTop = 40;
+  headingFrame.paddingBottom = 40;
   addAutoLayout(headingFrame, "HORIZONTAL");
   const headingTextNode = figma.createText();
-  await figma.loadFontAsync(headingTextNode.fontName as FontName);
+  const columnFont: FontName = { family: "Inter", style: "Bold" };
+  const regularFont: FontName = { family: "Inter", style: "Regular" };
+  await figma.loadFontAsync(columnFont);
+  await figma.loadFontAsync(regularFont);
   headingTextNode.characters = "Text Styles";
+  headingTextNode.fontSize = 50;
+  headingTextNode.fontName = columnFont;
   headingFrame.appendChild(headingTextNode);
 
   return headingFrame;
@@ -221,7 +228,6 @@ async function updateBreakpointMainHeader(
   breakpoint: "Desktop" | "Mobile"
 ) {
   const columnFont: FontName = { family: "Inter", style: "Bold" };
-  await figma.loadFontAsync(columnFont);
   mainHeader.characters = breakpoint;
   mainHeader.fontSize = 20;
   mainHeader.fontName = columnFont;
@@ -229,7 +235,6 @@ async function updateBreakpointMainHeader(
 
 async function updateColumnHeaders(columnHeaders: TextNode[]) {
   const columnFont: FontName = { family: "Inter", style: "Bold" };
-  await figma.loadFontAsync(columnFont);
   columnHeaders.forEach((header) => {
     header.fontName = columnFont;
     header.characters = header.characters.toUpperCase();
