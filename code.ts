@@ -1,11 +1,3 @@
-// This plugin will open a window to prompt the user to enter a number, and
-// it will then create that many rectangles on the screen.
-
-// This file holds the main code for plugins. Code in this file has access to
-// the *figma document* via the figma global object.
-// You can access browser APIs in the <script> tag inside "ui.html" which has a
-// full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
-
 type FontData = {
   size: string;
   lineHeight: string;
@@ -126,9 +118,7 @@ const defaultFontData: AllFontData[] = [
   },
 ];
 
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
+/** Creates basic text styles frame that can be read by other plugins. */
 if (figma.editorType === "figma") {
   const main = async () => {
     const parentFrame = figma.createFrame();
@@ -181,6 +171,7 @@ async function getHeadingFrame() {
   headingFrame.paddingTop = 40;
   headingFrame.paddingBottom = 40;
   addAutoLayout(headingFrame, "HORIZONTAL");
+
   const headingTextNode = figma.createText();
   const columnFont: FontName = { family: "Inter", style: "Bold" };
   const regularFont: FontName = { family: "Inter", style: "Regular" };
@@ -189,6 +180,7 @@ async function getHeadingFrame() {
   headingTextNode.characters = "Text Styles";
   headingTextNode.fontSize = 50;
   headingTextNode.fontName = columnFont;
+
   headingFrame.appendChild(headingTextNode);
 
   return headingFrame;
